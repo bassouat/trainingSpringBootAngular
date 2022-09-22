@@ -5,10 +5,7 @@ import com.basseydou.trainingSpringBootAngular.exception.ResourceNotFoundExcepti
 import com.basseydou.trainingSpringBootAngular.model.Employee;
 import com.basseydou.trainingSpringBootAngular.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +18,7 @@ public class EmployeeController {
 
     /*Get all employees*/
     @GetMapping("/employees")
+    @CrossOrigin(origins = "http://localhost:4200")
     public List<Employee> getAllEmployees(){
     return employeeRepository.findAll();
     }
@@ -34,5 +32,14 @@ public class EmployeeController {
         return employeeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(" Employee with id : "+ id + " is not found"));
 
     }
+
+    // TODO: 20/09/2022 get Employee by firstName or lastName or email
+
+    //Create Employee REST API
+    @PostMapping("/employees")
+    public Employee createEmployee(@RequestBody Employee newEmployee){
+        return employeeRepository.save(newEmployee);
+    }
+
 
 }
