@@ -5,12 +5,14 @@ import com.basseydou.trainingSpringBootAngular.exception.ResourceNotFoundExcepti
 import com.basseydou.trainingSpringBootAngular.model.Employee;
 import com.basseydou.trainingSpringBootAngular.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/basseydou")
+@CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
 
     @Autowired
@@ -18,27 +20,43 @@ public class EmployeeController {
 
     /*Get all employees*/
     @GetMapping("/employees")
-    @CrossOrigin(origins = "http://localhost:4200")
-    public List<Employee> getAllEmployees(){
-    return employeeRepository.findAll();
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
     }
 
     /*Get employee by id*/
     @GetMapping(path = "/employees/{id}")
-    public Employee getEmployeeById(@PathVariable(name = "id") Long id){
-        List<Employee> employeeList = employeeRepository.findAll();
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "id") Long employeeId) {
+        /*List<Employee> employeeList = employeeRepository.findAll();*/
         /*return employeeList.stream().filter(employee ->id.equals(employee.getId()) )
                 .findFirst().orElseThrow(()->new ResourceNotFoundException("Employee with id : "+ id +" is not found"));*/
-        return employeeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(" Employee with id : "+ id + " is not found"));
+        Employee employeeById = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException(" Employee with id : " + employeeId + " is not found"));
+        return ResponseEntity.ok(employeeById);
 
     }
 
     // TODO: 20/09/2022 get Employee by firstName or lastName or email
 
-    //Create Employee REST API
+    //Create employee REST API
     @PostMapping("/employees")
-    public Employee createEmployee(@RequestBody Employee newEmployee){
+    public Employee createEmployee(@RequestBody Employee newEmployee) {
         return employeeRepository.save(newEmployee);
+    }
+
+    //Update employee REST API
+    @PutMapping(path = "/employees/{id}")
+    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee newEmployee,@PathVariable(value = "id") Long employeeId){
+         final Employee employeeUpdate=employeeRepository.findById(employeeId)
+                        .map(employee -> {employee.setFirstname(newEmployee.getFirstname());
+                                            employee.setLastName(newEmployee.getLastName());
+                                            employee.setEmailId(newEmployee.getEmailId());
+                        return employeeRepository.save(employee);} )
+                 .orElseThrow(() -> new ResourceNotFoundException(" Employee with id : " + employeeId + " is not found"));
+                    /*.orElseGet(()->{newEmployee.setId(employeeId);
+                    return employeeRepository.save(newEmployee);});*/
+
+        return ResponseEntity.ok(employeeUpdate);
     }
 
 
