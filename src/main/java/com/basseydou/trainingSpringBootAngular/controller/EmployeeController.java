@@ -46,7 +46,7 @@ public class EmployeeController {
 
     //Update employee REST API
     @PutMapping(path = "/employees/{id}")
-    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee newEmployee,@PathVariable(value = "id") Long employeeId){
+    public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeId,@RequestBody Employee newEmployee){
          final Employee employeeUpdate=employeeRepository.findById(employeeId)
                         .map(employee -> {employee.setFirstname(newEmployee.getFirstname());
                                             employee.setLastName(newEmployee.getLastName());
