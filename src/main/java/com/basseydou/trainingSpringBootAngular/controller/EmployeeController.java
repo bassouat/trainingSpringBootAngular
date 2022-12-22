@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("api/basseydou")
-@CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
 
     @Autowired
@@ -59,5 +61,15 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeUpdate);
     }
 
+    /*Delete REST API*/
+    @DeleteMapping(path="/employees/{id}")
+    public ResponseEntity<Map<String,Boolean>> deleteEmployee(@PathVariable(value = "id") Long employeeId){
+        Employee employeeById = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException(" Employee with id : " + employeeId + " is not found"));
+         employeeRepository.delete(employeeById);
+         Map<String,Boolean> response=new HashMap<>();
+         response.put("deleted with success",Boolean.TRUE);
+         return ResponseEntity.ok(response);
+    }
 
 }
